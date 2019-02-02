@@ -5,8 +5,8 @@ def visualize_game_start(game_info, uuid=None):
     ls.append(_visualize_title("Game start", uuid))
     ls.append(DIVIDER)
     ls.append(_visualize_sub_title("rule"))
-    ls.append(_visualize_item("%d players game" % game_info["player_num"]))
-    ls.append(_visualize_item("%d round" % game_info["rule"]["max_round"]))
+    ls.append(_visualize_item("%d players" % game_info["player_num"]))
+    ls.append(_visualize_item("round %d" % game_info["rule"]["max_round"]))
     ls.append(_visualize_item("start stack = %s" % game_info["rule"]["initial_stack"]))
     ls.append(_visualize_item("       ante = %s" % game_info["rule"]["ante"]))
     ls.append(_visualize_item("small blind = %s" % game_info["rule"]["small_blind_amount"]))
@@ -22,11 +22,11 @@ def visualize_game_start(game_info, uuid=None):
 
 def visualize_round_start(round_count, hole_card, seats, uuid=None):
     ls = []
-    ls.append(_visualize_title("Round %d start" % round_count, uuid))
+    ls.append(_visualize_title("Start of Round %d" % round_count, uuid))
     ls.append(DIVIDER)
     ls.append(_visualize_sub_title("hole card"))
     ls.append(_visualize_item(str(hole_card)))
-    ls.append(_visualize_sub_title("players information"))
+    ls.append(_visualize_sub_title("player information"))
     for idx, player_info in enumerate(seats):
         player_str = "%d : %s" % (idx, visualize_player(player_info))
         ls.append(_visualize_item(player_str))

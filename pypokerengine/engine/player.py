@@ -62,7 +62,7 @@ class Player:
     elif kind == Const.Action.ANTE:
       history = self.__ante_history(chip_amount)
     else:
-      raise "UnKnown action history is added (kind = %s)" % kind
+      raise "Unknown action history is added (kind = %s)" % kind
     history = self.__add_uuid_on_history(history)
     self.action_histories.append(history)
 

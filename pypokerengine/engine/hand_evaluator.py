@@ -8,10 +8,10 @@ class HandEvaluator:
   TWOPAIR       = 1 << 9
   THREECARD     = 1 << 10
   STRAIGHT      = 1 << 11
-  FLASH         = 1 << 12
+  FLUSH         = 1 << 12
   FULLHOUSE     = 1 << 13
   FOURCARD      = 1 << 14
-  STRAIGHTFLASH = 1 << 15
+  STRAIGHTFLUSH = 1 << 15
 
   HAND_STRENGTH_MAP = {
       HIGHCARD: "HIGHCARD",
@@ -19,10 +19,10 @@ class HandEvaluator:
       TWOPAIR: "TWOPAIR",
       THREECARD: "THREECARD",
       STRAIGHT: "STRAIGHT",
-      FLASH: "FLASH",
+      FLUSH: "FLUSH",
       FULLHOUSE: "FULLHOUSE",
       FOURCARD: "FOURCARD",
-      STRAIGHTFLASH: "STRAIGHTFLASH"
+      STRAIGHTFLUSH: "STRAIGHTFLUSH"
   }
 
   @classmethod
@@ -62,17 +62,17 @@ class HandEvaluator:
   #       TwoPair of rank A, 4     =>       10 1110 0100
   #       ThreeCard of rank 9      =>      100 1001 0000
   #       Straight of rank 10      =>     1000 1010 0000
-  #       Flash of rank 5          =>    10000 0101 0000
+  #       Flush of rank 5          =>    10000 0101 0000
   #       FullHouse of rank 3, 4   =>   100000 0011 0100
   #       FourCard of rank 2       =>  1000000 0010 0000
-  #       straight flash of rank 7 => 10000000 0111 0000
+  #       straight flush of rank 7 => 10000000 0111 0000
   @classmethod
   def __calc_hand_info_flg(self, hole, community):
     cards = hole + community
-    if self.__is_straightflash(cards): return self.STRAIGHTFLASH | self.__eval_straightflash(cards)
+    if self.__is_straightflush(cards): return self.STRAIGHTFLUSH | self.__eval_straightflush(cards)
     if self.__is_fourcard(cards): return self.FOURCARD | self.__eval_fourcard(cards)
     if self.__is_fullhouse(cards): return self.FULLHOUSE | self.__eval_fullhouse(cards)
-    if self.__is_flash(cards): return self.FLASH | self.__eval_flash(cards)
+    if self.__is_flush(cards): return self.FLUSH | self.__eval_flush(cards)
     if self.__is_straight(cards): return self.STRAIGHT | self.__eval_straight(cards)
     if self.__is_threecard(cards): return self.THREECARD | self.__eval_threecard(cards)
     if self.__is_twopair(cards): return self.TWOPAIR | self.__eval_twopair(cards)
@@ -150,18 +150,23 @@ class HandEvaluator:
     straight_check = lambda acc, i: acc & (bit_memo >> (r+i) & 1) == 1
     for r in range(2, 15):
       if reduce(straight_check, range(5), True): rank = r
+    # cfa - check for wheel (ace-low straight)
+    if rank == -1 :
+      bit_memo = reduce(lambda memo, card: memo | 1 << (1 if card.rank == 14 else card.rank), cards, 0)
+      for r in range(1,15):
+        if reduce(straight_check, range(5), True): rank = r
     return rank
 
   @classmethod
-  def __is_flash(self, cards):
-    return self.__search_flash(cards) != -1
+  def __is_flush(self, cards):
+    return self.__search_flush(cards) != -1
 
   @classmethod
-  def __eval_flash(self, cards):
-    return self.__search_flash(cards) << 4
+  def __eval_flush(self, cards):
+    return self.__search_flush(cards) << 4
 
   @classmethod
-  def __search_flash(self, cards):
+  def __search_flush(self, cards):
     best_suit_rank = -1
     fetch_suit = lambda card: card.suit
     fetch_rank = lambda card: card.rank
@@ -217,21 +222,21 @@ class HandEvaluator:
     return 0
 
   @classmethod
-  def __is_straightflash(self, cards):
-    return self.__search_straightflash(cards) != -1
+  def __is_straightflush(self, cards):
+    return self.__search_straightflush(cards) != -1
 
   @classmethod
-  def __eval_straightflash(self, cards):
-    return self.__search_straightflash(cards) << 4
+  def __eval_straightflush(self, cards):
+    return self.__search_straightflush(cards) << 4
 
   @classmethod
-  def __search_straightflash(self, cards):
-    flash_cards = []
+  def __search_straightflush(self, cards):
+    flush_cards = []
     fetch_suit = lambda card: card.suit
     for suit, group_obj in groupby(sorted(cards, key=fetch_suit), key=fetch_suit):
       g = list(group_obj)
-      if len(g) >= 5: flash_cards = g
-    return self.__search_straight(flash_cards)
+      if len(g) >= 5: flush_cards = g
+    return self.__search_straight(flush_cards)
 
   @classmethod
   def __mask_hand_strength(self, bit):

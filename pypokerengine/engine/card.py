@@ -5,6 +5,12 @@ class Card:
   HEART = 8
   SPADE = 16
 
+#  SUIT_MAP = {
+#      2  : '\u2663',
+#      4  : '\u2666',
+#      8  : '\u2665',
+#      16 : '\u2660'
+#  }
   SUIT_MAP = {
       2  : 'C',
       4  : 'D',
@@ -39,7 +45,7 @@ class Card:
   def __str__(self):
     suit = self.SUIT_MAP[self.suit]
     rank = self.RANK_MAP[self.rank]
-    return "{0}{1}".format(suit, rank)
+    return "{0}{1}".format(rank, suit)
 
   def to_id(self):
     rank = 1 if self.rank == 14 else self.rank
@@ -64,7 +70,7 @@ class Card:
   def from_str(cls, str_card):
     assert(len(str_card)==2)
     inverse = lambda hsh: {v:k for k,v in hsh.items()}
-    suit = inverse(cls.SUIT_MAP)[str_card[0].upper()]
-    rank = inverse(cls.RANK_MAP)[str_card[1]]
+    suit = inverse(cls.SUIT_MAP)[str_card[1].upper()]
+    rank = inverse(cls.RANK_MAP)[str_card[0]]
     return cls(suit, rank)
 

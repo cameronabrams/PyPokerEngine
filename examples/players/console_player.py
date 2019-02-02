@@ -32,13 +32,13 @@ class ConsolePlayer(BasePokerPlayer):
     self.__wait_until_input()
 
   def __wait_until_input(self):
-    raw_input("Enter some key to continue ...")
+    input("[Enter] to continue ")
 
   def __gen_raw_input_wrapper(self):
-    return lambda msg: raw_input(msg)
+    return lambda msg: input(msg)
 
   def __receive_action_from_console(self, valid_actions):
-    flg = self.input_receiver('Enter f(fold), c(call), r(raise).\n >> ')
+    flg = self.input_receiver('[f]old, [c]all, [r]aise >>> ')
     if flg in self.__gen_valid_flg(valid_actions):
       if flg == 'f':
         return valid_actions[0]['action'], valid_actions[0]['amount']
